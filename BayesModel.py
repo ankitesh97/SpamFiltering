@@ -1,5 +1,5 @@
 
-import pandas
+import pandas as pd
 import numpy
 import os
 
@@ -25,5 +25,19 @@ def parse_files(email_files, email_path):
 
 	return emails,labels
 
+def create_frequency_table(texts, labels=None, parse=False):
 
-print parse_files(email_files,email_path)
+	frequency_table = pd.DataFrame([])
+	for idx, t in enumerate(texts):
+		vocab = set(t)
+		d = pd.Series({v:t.count(v) for v in vocab})  #each email represents a column in the final dataframe
+#series vs dataframes is like array vs multi dimensional array
+		if labels != None:
+			d['*class*'] = labels[idx]
+		frequency_table = frequency_table.append(d,ignore_index=True)
+	return frequency_table
+
+
+
+emails,labels = parse_files(email_files,email_path)
+create_frequency_table(emails,labels).to_csv('a.csv')
